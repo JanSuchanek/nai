@@ -42,10 +42,10 @@ final class GeminiGenerator implements AiGeneratorInterface
 					'maxOutputTokens' => 2048,
 					'temperature' => 0.7,
 				],
-			]),
+			]) ?: '',
 		]);
 
-		$response = curl_exec($ch);
+		$response = (string) curl_exec($ch);
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
@@ -53,8 +53,9 @@ final class GeminiGenerator implements AiGeneratorInterface
 			throw new \RuntimeException('Gemini API error (HTTP ' . $code . '): ' . $response);
 		}
 
+		/** @var array{candidates: list<array{content: array{parts: list<array{text: string}>}}>} $data */
 		$data = json_decode($response, true);
-		return trim($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
+		return trim((string) ($data['candidates'][0]['content']['parts'][0]['text'] ?? ''));
 	}
 
 

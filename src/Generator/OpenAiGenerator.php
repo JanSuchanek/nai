@@ -43,10 +43,10 @@ final class OpenAiGenerator implements AiGeneratorInterface
 				'messages' => $messages,
 				'max_tokens' => 2048,
 				'temperature' => 0.7,
-			]),
+			]) ?: '',
 		]);
 
-		$response = curl_exec($ch);
+		$response = (string) curl_exec($ch);
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
@@ -54,8 +54,9 @@ final class OpenAiGenerator implements AiGeneratorInterface
 			throw new \RuntimeException('OpenAI API error (HTTP ' . $code . '): ' . $response);
 		}
 
+		/** @var array{choices: list<array{message: array{content: string}}>} $data */
 		$data = json_decode($response, true);
-		return trim($data['choices'][0]['message']['content'] ?? '');
+		return trim((string) ($data['choices'][0]['message']['content'] ?? ''));
 	}
 
 

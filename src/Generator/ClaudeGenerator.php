@@ -45,10 +45,10 @@ final class ClaudeGenerator implements AiGeneratorInterface
 				'anthropic-version: 2023-06-01',
 				'Content-Type: application/json',
 			],
-			CURLOPT_POSTFIELDS => json_encode($body),
+			CURLOPT_POSTFIELDS => json_encode($body) ?: '',
 		]);
 
-		$response = curl_exec($ch);
+		$response = (string) curl_exec($ch);
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 
@@ -56,8 +56,9 @@ final class ClaudeGenerator implements AiGeneratorInterface
 			throw new \RuntimeException('Claude API error (HTTP ' . $code . '): ' . $response);
 		}
 
+		/** @var array{content: list<array{text: string}>} $data */
 		$data = json_decode($response, true);
-		return trim($data['content'][0]['text'] ?? '');
+		return trim((string) ($data['content'][0]['text'] ?? ''));
 	}
 
 
