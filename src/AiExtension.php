@@ -38,6 +38,7 @@ class AiExtension extends CompilerExtension
 	public function loadConfiguration(): void
 	{
 		$builder = $this->getContainerBuilder();
+		/** @var \stdClass $config */
 		$config = $this->getConfig();
 
 		$generatorClass = match ($config->provider) {
